@@ -7,25 +7,15 @@ A deep learning project to extract road networks from satellite imagery using th
 road-extraction-unet/
 
 ├── data/
-
 ├── preprocessing/
-
 ├── model/
-
 ├── training/
-
 ├── deployment/
-
 ├── utils/
-
 ├── checkpoints/
-
 ├── static/
-
 ├── templates/
-
 ├── requirements.txt
-
 └── README.md
 
 ## Goals
