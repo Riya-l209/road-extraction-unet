@@ -1,0 +1,45 @@
+Road Extraction from Satellite Images - Model Architecture Notes
+
+
+Model Overview:
+
+- The task is to segment road areas from satellite images.
+- A semantic segmentation model is used to label each pixel as road or background.
+- The most commonly used architecture for this task is U-Net, due to its ability to learn spatial features efficiently.
+
+Why U-Net?
+
+- U-Net is designed for biomedical image segmentation but works well on satellite images.
+- It uses an encoder-decoder structure:
+  - Encoder (Contracting Path): Captures context using convolution and max pooling.
+  - Decoder (Expanding Path): Performs upsampling and concatenation with encoder features.
+- Skip connections help retain spatial information, crucial for precise road extraction.
+
+Input/Output:
+
+- Input: RGB satellite image (e.g., 256x256x3).
+- Output: Binary mask of the same spatial dimension (e.g., 256x256x1), where:
+  - 1 = Road
+  - 0 = Background
+
+Loss Function:
+
+- Binary Cross Entropy (BCE) for pixel-wise classification.
+- Dice Loss or IoU Loss is often added for better overlap performance.
+- Example combined loss:
+  Loss = BCE + DiceLoss
+
+Metrics:
+
+- Intersection over Union (IoU)
+- F1-Score (Dice coefficient)
+- Pixel Accuracy
+
+Resources:
+
+1. U-Net Original Paper: https://arxiv.org/abs/1505.04597
+2. U-Net for Road Segmentation (Blog): https://towardsdatascience.com/u-net-b229b32b4a71
+3. Dataset Example (Massachusetts Roads): https://www.cs.toronto.edu/~vmnih/data/
+4. PyTorch U-Net GitHub: https://github.com/milesial/Pytorch-UNet
+5. TensorFlow U-Net Example: https://www.tensorflow.org/tutorials/images/segmentation
+
