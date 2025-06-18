@@ -5,7 +5,7 @@ Model Overview:
 - A semantic segmentation model is used to label each pixel as road or background.
 - The most commonly used architecture for this task is U-Net, due to its ability to learn spatial features efficiently.
 
-Why U-Net?
+Why U-Net:
 - U-Net is designed for biomedical image segmentation but works well on satellite images.
 - It uses an encoder-decoder structure:
   - Encoder (Contracting Path): Captures context using convolution and max pooling.
@@ -13,6 +13,7 @@ Why U-Net?
 - Skip connections help retain spatial information, crucial for precise road extraction.
 
 Input/Output:
+
 - Input: RGB satellite image (e.g., 256x256x3).
 - Output: Binary mask of the same spatial dimension (e.g., 256x256x1), where:
   - 1 = Road
