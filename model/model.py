@@ -1,74 +1,71 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
-class DoubleConv(nn.Module):
-    """(Conv => BN => ReLU) * 2"""
-    def __init__(self, in_channels, out_channels):
-        super(DoubleConv, self).__init__()
-        self.double_conv = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-        )
-
-    def forward(self, x):
-        return self.double_conv(x)
 
 class UNet(nn.Module):
-    def __init__(self, n_channels=3, n_classes=1):
+    def __init__(self, in_channels=3, out_channels=1):
         super(UNet, self).__init__()
 
-        self.inc = DoubleConv(n_channels, 64)
-        self.down1 = self.down_block(64, 128)
-        self.down2 = self.down_block(128, 256)
-        self.down3 = self.down_block(256, 512)
-        self.down4 = self.down_block(512, 1024)
+        def conv_block(in_channels, out_channels):
+            return nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
+                nn.BatchNorm2d(out_channels),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
+                nn.BatchNorm2d(out_channels),
+                nn.ReLU(inplace=True)
+            )
 
-        self.up1 = self.up_block(1024, 512)
-        self.up2 = self.up_block(512, 256)
-        self.up3 = self.up_block(256, 128)
-        self.up4 = self.up_block(128, 64)
-        
-        self.outc = nn.Conv2d(64, n_classes, kernel_size=1)
+        self.enc1 = conv_block(in_channels, 64)
+        self.enc2 = conv_block(64, 128)
+        self.enc3 = conv_block(128, 256)
+        self.enc4 = conv_block(256, 512)
 
-    def down_block(self, in_ch, out_ch):
-        return nn.Sequential(
-            nn.MaxPool2d(2),
-            DoubleConv(in_ch, out_ch)
-        )
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
 
-    def up_block(self, in_ch, out_ch):
-        return nn.Sequential(
-            nn.ConvTranspose2d(in_ch, out_ch, kernel_size=2, stride=2),
-            DoubleConv(in_ch, out_ch)  # in_ch because we concat skip connection
-        )
+        self.bottleneck = conv_block(512, 1024)
+
+        self.upconv4 = nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2)
+        self.dec4 = conv_block(1024, 512)
+
+        self.upconv3 = nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2)
+        self.dec3 = conv_block(512, 256)
+
+        self.upconv2 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)
+        self.dec2 = conv_block(256, 128)
+
+        self.upconv1 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)
+        self.dec1 = conv_block(128, 64)
+
+        self.output = nn.Conv2d(64, out_channels, kernel_size=1)
 
     def forward(self, x):
-        x1 = self.inc(x)         # Encoder
-        x2 = self.down1(x1)
-        x3 = self.down2(x2)
-        x4 = self.down3(x3)
-        x5 = self.down4(x4)
+        
+        enc1 = self.enc1(x)
+        enc2 = self.enc2(self.pool(enc1))
+        enc3 = self.enc3(self.pool(enc2))
+        enc4 = self.enc4(self.pool(enc3))
 
-        x = self.up1[0](x5)      # Decoder + skip
-        x = torch.cat([x, x4], dim=1)
-        x = self.up1[1](x)
+        
+        bottleneck = self.bottleneck(self.pool(enc4))
 
-        x = self.up2[0](x)
-        x = torch.cat([x, x3], dim=1)
-        x = self.up2[1](x)
+     
+        dec4 = self.upconv4(bottleneck)
+        dec4 = torch.cat((dec4, enc4), dim=1)
+        dec4 = self.dec4(dec4)
 
-        x = self.up3[0](x)
-        x = torch.cat([x, x2], dim=1)
-        x = self.up3[1](x)
+        dec3 = self.upconv3(dec4)
+        dec3 = torch.cat((dec3, enc3), dim=1)
+        dec3 = self.dec3(dec3)
 
-        x = self.up4[0](x)
-        x = torch.cat([x, x1], dim=1)
-        x = self.up4[1](x)
+        dec2 = self.upconv2(dec3)
+        dec2 = torch.cat((dec2, enc2), dim=1)
+        dec2 = self.dec2(dec2)
 
-        return torch.sigmoid(self.outc(x))  # Use sigmoid for binary segmentation
+        dec1 = self.upconv1(dec2)
+        dec1 = torch.cat((dec1, enc1), dim=1)
+        dec1 = self.dec1(dec1)
+
+        return torch.sigmoid(self.output(dec1))
