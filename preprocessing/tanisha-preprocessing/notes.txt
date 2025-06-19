@@ -1,4 +1,0 @@
-Patching:
-- Splits large images into smaller chunks (patches).
-- Improves training performance.
-- Used for memory efficiency and local pattern learning.
