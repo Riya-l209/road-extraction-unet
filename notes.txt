@@ -1,3 +1,4 @@
+
 INSTALLATIONS REQUIRED TO RUN train.py
 
 VS terminal-
@@ -10,7 +11,3 @@ VS terminal-
 4) pip install torch torchvision torchaudio tqdm
 5) download data folder from vinayak-datamanage-> data-> preview -> images and masks
 store it locally in same folder where all python codes are present
-
-
-
-
