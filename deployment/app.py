@@ -1,28 +1,35 @@
-from flask import Flask, request, render_template, send_file
-from deployment.utils import load_model, preprocess_image, postprocess_mask, save_mask
+from flask import Flask, render_template, request, redirect, url_for
 import os
-import torch
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-model = load_model()  # Load model once at startup
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/', methods=['GET', 'POST'])
+# Home route
+@app.route('/')
 def home():
+    return "Flask app is running!"
+
+# Upload route
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
     if request.method == 'POST':
-        image_file = request.files['image']
-        image_path = 'static/input.png'
-        image_file.save(image_path)
+        if 'file' not in request.files:
+            return 'No file part'
+        file = request.files['file']
+        if file.filename == '':
+            return 'No selected file'
+        if file:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            return render_template('display.html', filename=filename)
+    return render_template('upload.html')
 
-        image_tensor = preprocess_image(image_path)
-        with torch.no_grad():
-            output = model(image_tensor)
+@app.route('/display/<filename>')
+def display_image(filename):
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
-        mask = postprocess_mask(output)
-        mask_path = save_mask(mask)
-
-        return send_file(mask_path, mimetype='image/png')
-
-    return render_template('index.html')
-    
 if __name__ == '__main__':
     app.run(debug=True)
