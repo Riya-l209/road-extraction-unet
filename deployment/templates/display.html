@@ -1,8 +1,11 @@
-<!doctype html>
+<!-- filepath: c:\Users\utkar\Downloads\road-extraction-unet-main\road-extraction-unet-main\deployment\templates\display.html -->
+<!DOCTYPE html>
 <html>
-<head><title>Image Uploaded</title></head>
+<head>
+    <title>Display File</title>
+</head>
 <body>
-  <h1>Uploaded Image</h1>
-  <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded Image">
+    <h1>Uploaded File</h1>
+    <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded Image">
 </body>
 </html>
