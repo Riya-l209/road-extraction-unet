@@ -73,7 +73,8 @@ def val_one_epoch(model, dataloader, loss_fn, device):
     return total_loss / len(dataloader), total_iou / len(dataloader)
 
 # Training Loop
-best_iou = 0
+best_loss = float('inf')
+best_iou = 0.0
 num_epochs = 10
 
 for epoch in range(1, num_epochs + 1):
@@ -83,10 +84,16 @@ for epoch in range(1, num_epochs + 1):
 
     print(f"📉 Train Loss: {train_loss:.4f} | 📊 Val Loss: {val_loss:.4f} | 🟩 Val IoU: {val_iou:.4f}")
 
-    # Save best model
+    # ✅ Save model based on lowest train loss
+    if train_loss < best_loss:
+        best_loss = train_loss
+        torch.save(model.state_dict(), "best_by_loss.pth")
+        print("💾 Saved best_by_loss.pth ✅")
+
+    # ✅ Save model based on highest validation IoU
     if val_iou > best_iou:
         best_iou = val_iou
-        torch.save(model.state_dict(), "best_model.pth")
-        print("💾 Saved new best model!")
+        torch.save(model.state_dict(), "best_by_iou.pth")
+        print("💾 Saved best_by_iou.pth ✅")
 
 print("\n✅ Training complete.")
