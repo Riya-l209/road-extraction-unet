@@ -1,0 +1,24 @@
+INSTALLATIONS REQUIRED TO RUN train.py
+
+VS terminal-
+
+1) python -m venv venv = create a different environment to run PyTorch
+2) .\venv\Scripts\activate
+3) pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 (this 126 is the cuda version[my system ver is 12.6], if system has gpu then only cuda is available, necessary for downloading pytorch)
+
+
+4) pip install torch torchvision torchaudio tqdm
+5) download data folder from vinayak-datamanage-> data-> preview -> images and masks
+store it locally in same folder where all python codes are present
+
+
+run the code in terminal with command-> python train.py
+
+
+
+Python files required-
+
+train.py
+model.py
+losses.py
+dataset.py
