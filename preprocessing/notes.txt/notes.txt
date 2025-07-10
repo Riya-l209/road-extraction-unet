@@ -1,0 +1,21 @@
+ What is Patching in Image Preprocessing?
+
+Patching is the process of dividing large images into smaller, fixed-size parts called "patches." 
+This is often done during preprocessing in computer vision tasks like semantic segmentation.
+
+ Why we use  Patching?
+- To reduce memory usage
+- To make training faster
+- To help the model learn better local features
+- To allow training on GPUs with limited memory
+
+ Example:
+If you have an image of size 512x512 pixels, you can break it into four 256x256 patches.
+This way, you can process smaller chunks of the image one at a time.
+
+ How it's used:
+Patching is especially useful for training models like U-Net, which need to work on smaller regions 
+of large satellite or medical images.
+
+📎 Bonus:
+Sometimes, overlapping patches are used to reduce edge artifacts and improve accuracy.
