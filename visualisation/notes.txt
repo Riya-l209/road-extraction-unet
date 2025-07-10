@@ -1,0 +1,42 @@
+Hi, I am Harshita — Visualizer & Tester 👩‍💻
+
+I was responsible for the testing and visualization  phase of our Road Extraction project using U-Net. My job was to take the trained model and generate clear, meaningful visual results that show how well it predicts road masks from satellite images.
+
+📚 Topics I Learned:
+
+🔸 **Matplotlib**
+Matplotlib is a powerful Python library for visualizing data. I used it to display side-by-side comparisons of:
+- The original satellite image
+- The ground truth mask (actual roads)
+- The predicted mask (roads detected by the model)
+
+🔸 **Image Overlay**
+Image overlay is the process of stacking one image on top of another. In this project, I explored overlaying the predicted binary mask over the original image to visually assess accuracy.
+
+🔸 **Sigmoid Activation & Thresholding**
+After model prediction, the output was a grayscale mask with pixel values between 0 and 1. I applied thresholding (e.g., values > 0.5) to convert it into a binary (black and white) image for clearer road segmentation.
+
+🔸 **Grad-CAM (intro)**
+Grad-CAM is a visualization technique that highlights areas in an image the model focused on. Although we didn’t implement it yet, I read about how it could help interpret U-Net predictions in future improvements.
+
+🎯 My Contributions:
+
+✅ Created and cleaned up the `test.py` script to:
+   - Load and preprocess all 46 test images
+   - Perform inference using the trained model (`best_model.pth`)
+   - Apply sigmoid + thresholding to convert soft predictions to binary masks
+   - Save predicted masks and overlay visuals
+
+✅ Built the visualization logic using `matplotlib` and `PIL` to:
+   - Display original image, ground truth, and predicted mask side by side
+   - Save the result in the `visualization/` folder
+
+✅ Made sure **all 46 images** were processed and visualized (not just the first 5)
+
+✅ Fixed bugs like black predictions and path mismatches
+
+🔮 Goals for future work:
+- Implement Grad-CAM for interpretability
+- Experiment with overlay transparency for better visual contrast
+- Compare predictions across epochs to track model improvement
+

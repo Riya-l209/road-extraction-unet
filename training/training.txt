@@ -1,0 +1,58 @@
+MODEL TRAINING
+
+ Loss- a no that tells how wrong the model's prediction is- inversely proportional- high loss mean bad prediction
+
+	(a) Binary Cross Entropy(BCE) Loss- used for binary classification (road vs non-road per pixel).
+	   -> formula: BCE=-[y*log(p) + (1-y)*log(1-p)]
+	   -> Expected O/P- Target (ground truth): 1 (road)
+		            Model output (predicted prob): 0.95 → Good → Low loss
+			    Model output: 0.1 → Bad → High loss
+	   -> deviation means under-detecting roads (false neg) OR over-predicting roads(false positive)
+	   -> easy to implement
+	   -> fails when data is class-imbalanced
+	   -> here will not give good results as data is class imbalance
+	   
+
+
+	(b) Dice Loss - used for handling class imbalance
+	    -> formula : 1 - (2 * |X ∩ Y|) / (|X| + |Y|)
+	    ->  focuses on overlap- helps learn road shapes better.
+	         -> Expected O/P- large overlap predicted b/w road region and actual road region
+			     Dice coefficient = 1 → Perfect match (loss = 0)  
+			     Dice coefficient = 0.6 → Partial match (loss = 0.4)
+	    -> deviation mean partial prediction, narrow roads or road boundaries not matched exactly 
+	    -> sensitive to shape mismatch (like even if pixels predicted correctly in quantity, but location is wrong)	
+
+
+
+	(c) Combined Loss (BCE + Dice)- used for balancing pixel accuracy and overall shape (good default).
+	      -> formula : Combined = α * BCE + (1 - α) * Dice  (here in this project α=0.3)
+	      -> Expected O/P- Pixel-wise accuracy (from BCE) AND Region-wise overlap and shape match (from Dice)
+			       Loss = 0.3 * BCE + 0.7 * Dice
+	      -> deviation mean failing to predict roads pixel-perfectly (BCE fails) OR predicting disconnected or broken roads (Dice fails)
+
+	      ->will work better here as covers pixel-level and structural-level errors.
+
+			      
+
+	(d) Jaccard Loss (IoU Loss) - used for optimizing the IoU metric directly.
+	     -> formula: 1 - (|X ∩ Y| / |X ∪ Y|) 
+	     -> can use it for advanced evaluation
+	     -> -> Expected O/P- High intersection over union of predicted and actual road area.
+			       IoU = 1 → Perfect overlap → loss = 0  
+			       IoU = 0.3 → Weak overlap → loss = 0.7
+	      -> deviation mean low area match - either predicting too much (over-segmentation) or too little (under-segmentation) OR boundary mismatch, missing parts
+	      -> If wrongly predict extra roads → IoU decreases (penalized)
+		 If miss real roads → IoU also decreases
+
+
+
+BASED ON OUR REQUIREMENT COMBINED(BCE + DICE) IS THE BEST FIT FOR CALCULATING LOSS 
+ALSO NEED TO TRACK EVALUATION METRICS(IoU, F1) 
+
+Precision = True pos/ true pos + false pos
+Recall = true pos / true pos + false neg
+F1 score = harmonic mean of precision and recall
+
+
+ 
